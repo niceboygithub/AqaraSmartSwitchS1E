@@ -1,1 +1,1 @@
-Resources for Aqara Smart Switch S1E
+# Resources for Aqara Smart Switch S1E
