@@ -22,7 +22,7 @@ Here is another solution which is using MQTT to integrate to HA and provides mor
 
 <img src="/images/s1e2ha_controls.png" alt="controls" height="634" width="160"> <img src="/images/s1e2ha_sensors.png" alt="sensors" height="190" width="160"> <img src="/images/s1e2ha_diagnostic.png" alt="diagnostic" height="440" width="160">
 
-To use the integration, you need to enable telnet and login to telnet to install this integraton.
+To use the integration, you need to [enable telnet](/homeassistant/telnet.md) and login to telnet to install this integraton.
 After enabled telent, please make sure that you had *MQTT broker* running then following the intrustions.
 
 ```
