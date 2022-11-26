@@ -23,7 +23,8 @@ passwd -d root
 <img src="/images/s1e_uart.png" alt="uart" height="520" width="460">
 
 3. Interrupt uboot.
-(update soon)
+  - Use putty to open COM port. Baud Rate is 115200.
+  - While boot up, keep pressed the key "enter". If not stop uboot, please try again.
 
 4. If it stopped on uboot cli, enter the following command
 

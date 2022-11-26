@@ -146,7 +146,14 @@ get_config() {
             echo
             subscribe=$($SUB $MQTT_ARGS -t $topic -v --retained-only -C 1 -W 3 --quiet)
             ret=$?
-            if [ "x$subscribe" == "x" -o "x$ret" != "x0" ]; then
+            if [ "x$subscribe" != "x" ]; then
+                MQTT_IP=$mqtt_ip
+                MQTT_USER=$mqtt_user
+                MQTT_PASSWORD=$mqtt_password
+                MQTT_PORT=`[ ! -z $mqtt_port ] && echo "$mqtt_port" || echo "1883"`
+                return
+            fi
+            if [ "x$ret" != "x0" ]; then
                 warn "Can not connecto MQTT broker, please try agin"
                 echo
             else
@@ -265,6 +272,7 @@ set_post_init() {
     if [ -x "$USER_BIN/run_$NAME.sh" ]; then
         ret=$(echo "$spath/post_init.sh" | grep "$USER_BIN/run_$NAME.sh")
         if [ "x$ret" == "x" ]; then
+            sed -e ':a' -e 'N' -e '$!ba' -e "s,\n\[ -x $USER_BIN/run_s1e2ha.sh \] \&\& $USER_BIN/run_$NAME.sh,,g" -i "$spath/post_init.sh"
             echo -e "\n[ -x $USER_BIN/run_$NAME.sh ] && $USER_BIN/run_$NAME.sh" >> "$spath/post_init.sh"
         fi
     fi
