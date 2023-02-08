@@ -1,6 +1,6 @@
 # Enable Telnet of S1E
 
-## Easy way (works till 2.0.5_1032), but you may need to wait for a long time
+## Easy way, but you may need to wait for a long time
 1. Call or Email to Aqara for did and key of the S1E
 2. Run generate_pswd.sh
 ```
@@ -17,7 +17,7 @@ example:
 passwd -d root
 ```
 
-## Hard way (High Risk, do it at your own risk)
+## Hard way (High Risk, do it at your own risk) (works till 2.0.5_1032)
 1. Open the case
 2. Connect to UART, reference to the picture. Suggestion use soldering.
 <img src="/images/s1e_uart.png" alt="uart" height="520" width="460">

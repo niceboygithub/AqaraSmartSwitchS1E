@@ -13,6 +13,11 @@ Some scripts help you to speed up some works.
 For example, pic_resizer.py can help to resize and convert the pictures which are using in theme. More detail to use pic_resizer.py etc., please see the [readme](/scripts/README.md).
 
 # homeassistant
+## Important: CAUTION :warning:
+:warning: Lumi has removed the telnetd and post_init.sh check after the version 2.0.5_1044. So to enable S1E2HA, you need to flash customized firmware to enable telnet and post_init.sh.
+Please do not upgrade to 2.0.5_1044 and 2.0.6_xxxx after.
+:warning:
+
 The custom_component of S1E to integrate to Home Assistant.
 
 The Aqara Smart Switch S1E supports HomeKit, so you can use HomeKit integration of HA to connect S1E to HA.
