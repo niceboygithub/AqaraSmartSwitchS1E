@@ -62,7 +62,7 @@ check_mqtt() {
     fi
 
     if [ -z "$PUB" -o -z "$SUB" ]; then
-        error "The mosquitto_sub or mosquitto_sub are not exist!"
+        error "The mosquitto_pub or mosquitto_sub are not exist!"
     fi
 }
 
