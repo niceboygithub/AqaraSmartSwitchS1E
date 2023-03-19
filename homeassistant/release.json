@@ -4,7 +4,14 @@
             "default": {
                 "release_date": "2023-03-05T00:40:04Z",
                 "download_url": "https://raw.githubusercontent.com/niceboygithub/AqaraSmartSwitchS1E/master/homeassistant/s1e2ha.tar.gz",
-                "version": "1.0.1",
+                "version": "1.0.2",
+                "note_url": "https://github.com/niceboygithub/AqaraSmartSwitchS1E/homeassistant/release-notes.md",
+                "release_type": "stable"
+            },
+            "1.0.2": {
+                "release_date": "2023-03-19T00:40:04Z",
+                "download_url": "https://raw.githubusercontent.com/niceboygithub/AqaraSmartSwitchS1E/master/homeassistant/s1e2ha.tar.gz",
+                "version": "1.0.2",
                 "note_url": "https://github.com/niceboygithub/AqaraSmartSwitchS1E/homeassistant/release-notes.md",
                 "release_type": "stable"
             },
