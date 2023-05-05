@@ -1,5 +1,8 @@
 # S1E2HA Release Notes
 
+## 1.0.3
+* fix bug after upgrade Home Assistant 2023.5.0
+
 ## 1.0.2
 * fix bug that missing the icon of firmware lock
 
