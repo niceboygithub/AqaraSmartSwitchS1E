@@ -76,3 +76,34 @@ cd /tmp && wget -O /tmp/curl "http://master.dl.sourceforge.net/project/aqarahub/
 /tmp/curl -s -k -L -o /tmp/s1e_update.sh https://raw.githubusercontent.com/niceboygithub/AqaraSmartSwitchS1E/master/firmwares/modified/S1E/s1e_update.sh
 chmod a+x /tmp/s1e_update.sh && /tmp/s1e_update.sh
 ```
+
+
+### How to roolback to old firmware
+1. Open the case
+2. Connect to UART, reference to the picture. Suggestion use soldering.
+<img src="/images/s1e_uart.png" alt="uart" height="520" width="460">
+
+3. Interrupt uboot.
+  - Use putty to open COM port. Baud Rate is 115200.
+  - While boot up, keep pressed the key "enter". If not stop uboot, please try again.
+
+4. If it stopped on uboot cli, enter the following command
+
+printenv bootargs
+```
+   Save the bootargs to note, then replace the string "root=/dev/mtdblock7" to "root=/dev/mtdblock8", or "root=/dev/mtdblock8" to "root=/dev/mtdblock7".
+   For example, the new bootargs as below
+```
+setenv bootargs root=/dev/mtdblock7 rootfstype=squashfs ro init=/linuxrc loglevel=8 LX_MEM=0x3FE0000 mma_heap=mma_heap_name0,miu=0,sz=0x2B0000 cma=2M highres=on mmap_reserved=fb,miu=0,sz=0x300000,max_start_off=0x3300000,max_end_off=0x3600000 mtdparts=nand0:1664k@0x140000(BOOT0),1664k(BOOT1),256k(ENV),256k(ENV1),128k(KEY_CUST),3m(KERNEL),3m(KERNEL_BAK),20m(rootfs),20m(rootfs_bak),1m(factory),1m(MISC),10m(RES),10m(RES_BAK),-(UBI)
+```
+printenv bootcmd
+```
+   Save the bootcmd to note, then replace the string "KERNEL_BAK" to "KERNEL", AND "KERNEL" to "KERNEL_BAK".
+   For example, the new bootcmd as below
+```
+setenv bootcmd nand read.e 0x22000000 KERNEL_BAK 0x2d0000; dcache on; st7701; bootlogo 0 0 0 0;pwm 0 200000 200000 14; bootm 0x22000000;nand read.e 0x22000000 KERNEL 0x2d0000; dcache on; bootm 0x22000000
+```
+   Then enter the following commands
+```
+run bootcmd
+```
