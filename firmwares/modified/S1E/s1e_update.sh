@@ -31,6 +31,14 @@ OPTIONS="-h;-u;"
 PLATFORMS="-a;-m"
 
 #
+# Updater operations.
+# -s: check sign.
+# -n: ignore sign.
+# -o: original firmware.
+#
+UPDATER="-s;-n;-o"
+
+#
 # Default platform.
 # Must in aiot;miot.
 #
@@ -48,34 +56,40 @@ _ble_ota_bak_file="/data/ble_ota_bak.bin"
 # AC_P3 : Air Condition P3.
 # AH_M1S: Aqara Hub M1S.
 # AH_M2 : Aqara Hub M2.
-
-#
-# Version and md5sum
-#
-FIRMWARE_URL="https://raw.githubusercontent.com/niceboygithub/AqaraSmartSwitchS1E/master/firmwares"
-VERSION="2.0.6_0000"
-KERNEL_MD5SUM="de202a2bfa1ecaaf05dc397d688bdfdd"
-ROOTFS_MD5SUM="fd99afe4d2dc70bef356975a27432958"
-BTBL_MD5SUM=""
-BTAPP_MD5SUM=""
-IRCTRL_MD5SUM=""
-kernel_bin_=""
-rootfs_bin_=""
-
 #
 # note: default is unknow.
 #
 model=""
 
 #
-# Enable debug, 0/1.
+# Version and md5sum
 #
-debug=1
+FIRMWARE_URL="https://raw.githubusercontent.com/niceboygithub/AqaraSmartSwitchS1E/master/firmwares"
+VERSION="2.0.7_0008"
+KERNEL_MD5SUM="18ff05bb61a796f10b6a31b2922a0c27"
+ROOTFS_MD5SUM="a182fd754efaa56fd92bfa02ba9eabbf"
+MODIFIED_ROOTFS_MD5SUM="07f87aeec09ca4012fa67b066b79d58f"
+COOR_MD5SUM=""
+BTBL_MD5SUM=""
+BTAPP_MD5SUM=""
+IRCTRL_MD5SUM=""
 
-
+kernel_bin_=""
+rootfs_bin_=""
 ota_dir_="/data/ota_unpack"
 coor_dir_="/data/ota-files"
 fws_dir_="/data/ota_dir"
+
+#
+# note: default is unknow.
+#
+model=""
+
+FW_TYPE=1
+#
+# Enable debug, 0/1.
+#
+debug=1
 
 #
 # Show green content, in the same way to use as echo.
@@ -324,81 +338,6 @@ stop_miot() {
     if [ "$model" = "AC_P3" ]; then killall -9 mha_ir; fi
 }
 
-force_stop_unlimited() {
-    killall -9 app_monitor.sh
-    killall -9 property_service
-
-    # AIOT
-    killall -9 ha_master
-    killall -9 zigbee_agent
-    killall -9 ha_driven
-    killall -9 ha_basis
-    killall -9 ha_agent
-    killall -9 ha_lanbox
-    killall -9 Z3GatewayHost_MQTT
-    sleep 2
-
-    # MIOT
-    killall -9 miio_client
-    killall -9 miio_agent
-    killall -9 miio_client_helper_nomqtt.sh
-    killall -9 mha_master
-    killall -9 mha_basis
-    killall -9 mzigbee_agent
-    killall -9 mijia_automation
-    killall -9 homekitserver
-    killall -9 mZ3GatewayHost_MQTT
-}
-
-#
-# Backup homekit token info to res partition.
-#
-hap_token_backup() {
-    local hap_token_uuid=$1
-    local hap_token_key=$2
-
-    # Backup hap_uuid and hap_token_key to /misc
-    echo ${hap_token_uuid} >/misc/hap_token_uuid
-    echo ${hap_token_key} >/misc/hap_token_key
-
-    sync
-    green_echo "Backup hap_token_uuid and hap_token_key to '/misc' succeed."
-}
-
-#
-# Recovery homekit token info from res partition.
-#
-hap_token_recovery() {
-    if [ -e /misc/hap_token_uuid ]; then
-        local hap_token_uuid_property=$(agetprop persist.sys.hap_token_uuid)
-        local hap_token_uuid_res=$(cat /misc/hap_token_uuid)
-        if [ "$hap_token_uuid" != "$hap_token_uuid_res" ]; then
-            asetprop persist.sys.hap_token_uuid "$hap_token_uuid_res"
-            green_echo "Recovery hap_token_uuid from production partition."
-        fi
-
-        rm -f /misc/hap_token_uuid
-    fi
-
-    if [ -e /misc/hap_token_key ]; then
-        local hap_token_key=$(agetprop persist.sys.hap_token_key)
-        local hap_token_key_res=$(cat /misc/hap_token_key)
-        if [ "$hap_token_key" != "$hap_token_key_res" ]; then
-            asetprop persist.sys.hap_token_key "$hap_token_key_res"
-            green_echo "Recovery hap_token_key from production partition."
-        fi
-
-        rm -f /misc/hap_token_key
-    fi
-}
-
-dir_mount_ok() {
-    n=$(cat /proc/mounts | grep $1)
-    if [ x"$n" != x ]; then
-        echo "1"
-    fi
-}
-
 #
 # Switch to platform: AIOT.
 #
@@ -554,16 +493,27 @@ update_get_packages()
         [ "$(md5sum /tmp/full.gbl)" != "${BTAPP_MD5SUM}  /tmp/full.gbl" ] && return 1
     fi
 
-    if [ "x${simple_model}" != "xS1E" ]; then
-         /tmp/curl -s -k -L -o /tmp/ControlBridge.bin ${FIRMWARE_URL}/original/${simple_model}/${VERSION}/ControlBridge.bin
+    if [ "x${COOR_MD5SUM}" != "x" ]; then
+        /tmp/curl -s -k -L -o /tmp/ControlBridge.bin ${FIRMWARE_URL}/original/${simple_model}/${VERSION}/ControlBridge.bin
         [ "$(md5sum /tmp/ControlBridge.bin)" != "${COOR_MD5SUM}  /tmp/ControlBridge.bin" ] && return 1
     fi
 
-    /tmp/curl -s -k -L -o /tmp/linux.bin ${FIRMWARE_URL}/original/${simple_model}/${VERSION}/kernel_${VERSION}
-    [ "$(md5sum /tmp/linux.bin)" != "${KERNEL_MD5SUM}  /tmp/linux.bin" ] && return 1
+    if [ "x${KERNEL_MD5SUM}" != "x" ]; then
+        /tmp/curl -s -k -L -o /tmp/linux.bin ${FIRMWARE_URL}/original/${simple_model}/${VERSION}/kernel_${VERSION}
+        [ "$(md5sum /tmp/linux.bin)" != "${KERNEL_MD5SUM}  /tmp/linux.bin" ] && return 1
+    fi
 
-    /tmp/curl -s -k -L -o /tmp/rootfs.bin ${FIRMWARE_URL}/modified/${simple_model}/${VERSION}/rootfs_${VERSION}_modified.sqfs
-    [ "$(md5sum /tmp/rootfs.bin)" != "${ROOTFS_MD5SUM}  /tmp/rootfs.bin" ] && return 1
+    if [ "$FW_TYPE" == "0" ]; then
+        if [ "x${ROOTFS_MD5SUM}" != "x" ]; then
+            /tmp/curl -s -k -L -o /tmp/rootfs.bin ${FIRMWARE_URL}/original/${simple_model}/${VERSION}/rootfs_${VERSION}.sqfs
+            [ "$(md5sum /tmp/rootfs.bin)" != "${ROOTFS_MD5SUM}  /tmp/rootfs.bin" ] && return 1
+        fi
+    else
+        if [ "x${MODIFIED_ROOTFS_MD5SUM}" != "x" ]; then
+            /tmp/curl -s -k -L -o /tmp/rootfs.bin ${FIRMWARE_URL}/modified/${simple_model}/${VERSION}/rootfs_${VERSION}_modified.sqfs
+            [ "$(md5sum /tmp/rootfs.bin)" != "${MODIFIED_ROOTFS_MD5SUM}  /tmp/rootfs.bin" ] && return 1
+        fi
+    fi
 
     echo "Got packages done"
     return 0
@@ -971,9 +921,11 @@ update_done() {
     asetprop sys.dfu_progress 100
 
     sleep 1
+
     killall gui_monitor.sh
     killall aqgui
     killall sysservice
+    sync
 
     sleep 6
 #    reboot
@@ -988,74 +940,9 @@ helper() {
     local cmd="$1"
 
     case $cmd in
-    -r) usage_runner ;;
-
-    -s) usage_switcher ;;
-
-    -f) usage_factory ;;
-
     -u) usage_updater ;;
 
-    -t) usage_tester ;;
-
     *) usage_helper ;;
-    esac
-
-    return 0
-}
-
-#
-# Run user programs.
-#
-runner() {
-    local opt="$1"
-
-    run_prepare
-
-    case $opt in
-    -a) run_aiot ;;
-
-    -m) run_miot ;;
-
-    *) run_xxxx ;;
-    esac
-
-    return 0
-}
-
-#
-# Switch platform.
-#
-switcher() {
-    echo "no support switcher"
-    return 1
-    local opt="$1"
-
-    local platform=$(agetprop persist.sys.cloud)
-
-    case $opt in
-    -a) switch2_aiot "$platform" ;;
-
-    -m) switch2_miot "$platform" ;;
-
-    *) switch2_xxxx "$platform" ;;
-    esac
-
-    return 0
-}
-
-#
-# Factory operations.
-#
-factory() {
-    local opt="$1"
-
-    case $opt in
-    -r) factory_reset ;;
-
-    -m) factory_test ;;
-
-    *) green_echo "Lost params." ;;
     esac
 
     return 0
