@@ -1,5 +1,8 @@
 # S1E2HA Release Notes
 
+## 1.0.4
+* Support set the language of UI, The version 2.0.8 of firmware is required
+
 ## 1.0.3
 * fix bug after upgrade Home Assistant 2023.5.0
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DEBUG=0
-VERSION="1.0.2"
+VERSION="1.0.4"
 
 # linux
 USER_BIN="/data/bin"
@@ -272,49 +272,43 @@ set_post_init() {
     if [ -x "$USER_BIN/run_$NAME.sh" ]; then
         ret=$(echo "$spath/post_init.sh" | grep "$USER_BIN/run_$NAME.sh")
         if [ "x$ret" == "x" ]; then
-            sed -e ':a' -e 'N' -e '$!ba' -e "s,\n\[ -x $USER_BIN/run_s1e2ha.sh \] \&\& $USER_BIN/run_$NAME.sh,,g" -i "$spath/post_init.sh"
             echo -e "\n[ -x $USER_BIN/run_$NAME.sh ] && $USER_BIN/run_$NAME.sh" >> "$spath/post_init.sh"
         fi
     fi
     chattr +i "$spath/post_init.sh"
 }
 
-get_aqgui_cht() {
-    local aqgui_cht=n; local installed=
+set_aqgui_lang() {
+    local aqgui_cht=n; local installed=; local current=
+    local param=$1
 
-    read -p "Do you want install Tradition Chinese aqgui (y/n): " aqgui_cht
-
-    if [ "x$aqgui_cht" != "xy" ];then
-        info "Bye!"
-        exit 0
+    if [ "x$param" == "x-u" ]; then
+        return
     fi
 
-    installed=$(cat $spath/post_init.sh | grep patch_aqgui.sh)
-    if [ -n "$installed" ]; then
-        error "The aqgui Traditional Chinese package is already installed!"
+    read -p "Do you want set aqgui to 1. English 2. Simplified Chinese 3. Traditional Chinese (1/2/3/n): " aqgui_cht
+
+    if [ "x$aqgui_cht" == "xn" ]; then
+        info "No Change the language of UI!"
     fi
 
-    $USER_BIN/curl -s -k -L -o /tmp/aqgui_cht.tar.gz "https://raw.githubusercontent.com/niceboygithub/AqaraSmartSwitchS1E/master/aqgui_cht/aqgui_cht_${SW_VERSION}.tar.gz"
-    ret=$?
-    if [ "x$ret" != "x0" ]; then
-        error "Can not get aqgui Traditional Chinese package!"
-    fi
-    tar -xzf /tmp/aqgui_cht.tar.gz -C /data
-    ret=$?
-    if [ "x$ret" != "x0" ]; then
-        error "Extract package failed!"
+    if [ "x$aqgui_cht" == "x1" ]; then
+        current=$(ubus -S call setting get.display)
+        new=$(echo $current | sed -r "s/\"language\":\"(.*)\",\"autoBrightness/\"language\":\"en\",\"autoBrightness/g")
+        ubus -S call setting set.display '$new'
     fi
 
-    [ ! -x "$USER_BIN/aqgui_cht" ] && error "The aqgui_cht is not executable! Please report to developer."
-    [ ! -x "$USER_BIN/patch_aqgui.sh" ] && error "The patch_aqgui.sh is not executable! Please report to developer."
-    [ ! -x "/bin/sed" ] && error "The sed is not executable! Please report to developer."
+    if [ "x$aqgui_cht" == "x2" ]; then
+        current=$(ubus -S call setting get.display)
+        new=$(echo $current | sed -r "s/\"language\":\"(.*)\",\"autoBrightness/\"language\":\"zh\",\"autoBrightness/g")
+        ubus -S call setting set.display '$new'
+    fi
 
-    chattr -i "$spath/post_init.sh"
-    echo -e "\n[ -x $USER_BIN/patch_aqgui.sh ] && $USER_BIN/patch_aqgui.sh" >> "$spath/post_init.sh"
-    chattr +i "$spath/post_init.sh"
-
-    $USER_BIN/patch_aqgui.sh
-
+    if [ "x$aqgui_cht" == "x3" ]; then
+        current=$(ubus -S call setting get.display)
+        new=$(echo $current | sed -r "s/\"language\":\"(.*)\",\"autoBrightness/\"language\":\"zh-TW\",\"autoBrightness/g")
+        ubus -S call setting set.display '$new'
+    fi
 }
 
 enjoy_s1e2ha() {
@@ -354,5 +348,5 @@ check_mqtt
 get_config $params
 save_config $params
 set_post_init $params
-#get_aqgui_cht
+set_aqgui_lang $params
 enjoy_s1e2ha
