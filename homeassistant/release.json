@@ -2,9 +2,16 @@
     "models": {
         "CJPKG01LM": {
             "default": {
-                "release_date": "2023-08-24T21:40:04Z",
+                "release_date": "2023-10-06T09:26:14Z",
                 "download_url": "https://raw.githubusercontent.com/niceboygithub/AqaraSmartSwitchS1E/master/homeassistant/s1e2ha.tar.gz",
-                "version": "1.0.4",
+                "version": "1.0.5",
+                "note_url": "https://github.com/niceboygithub/AqaraSmartSwitchS1E/homeassistant/release-notes.md",
+                "release_type": "stable"
+            },
+            "1.0.5": {
+                "release_date": "2023-10-06T09:26:14Z",
+                "download_url": "https://raw.githubusercontent.com/niceboygithub/AqaraSmartSwitchS1E/master/homeassistant/s1e2ha.tar.gz",
+                "version": "1.0.5",
                 "note_url": "https://github.com/niceboygithub/AqaraSmartSwitchS1E/homeassistant/release-notes.md",
                 "release_type": "stable"
             },

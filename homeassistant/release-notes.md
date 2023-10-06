@@ -1,5 +1,8 @@
 # S1E2HA Release Notes
 
+## 1.0.5
+* Fix some S1E use switch id 33, 34, 35
+
 ## 1.0.4
 * Support set the language of UI, The version 2.0.8 of firmware is required
 
