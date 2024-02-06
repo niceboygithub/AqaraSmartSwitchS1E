@@ -1,5 +1,8 @@
 # S1E2HA Release Notes
 
+## 1.0.6
+* for compatibility the version 2.2.0 of S1E
+
 ## 1.0.5
 * Fix some S1E use switch id 33, 34, 35
 
