@@ -1,5 +1,8 @@
 # S1E2HA Release Notes
 
+## 1.0.7
+* Fix control switch not work in version 2.2.0
+
 ## 1.0.6
 * for compatibility the version 2.2.0 of S1E
 
