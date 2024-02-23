@@ -1,5 +1,8 @@
 # S1E2HA Release Notes
 
+## 1.0.8
+* Fix the state of theme sensor if in miot cloud
+
 ## 1.0.7
 * Fix control switch not work in version 2.2.0
 

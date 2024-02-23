@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DEBUG=0
-VERSION="1.0.7"
+VERSION="1.0.8"
 
 # linux
 USER_BIN="/data/bin"
