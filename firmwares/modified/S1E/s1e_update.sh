@@ -386,8 +386,16 @@ update_prepare() {
     # coor_dir_="/data/ota-files"
     # fws_dir_="/data/ota_dir"
 
+    firmwares_="$fws_dir_/lumi_fw.tar"
+
     # Clean old firmware directory.
-    if [ -d $fws_dir_ ]; then rm $fws_dir_ -rf; fi
+    if [ -d $fws_dir_ ]; then
+        if [-f $firmwares_]; then
+            chattr -i $firmwares_
+            rm $firmwares_ -f
+        fi
+        rm $fws_dir_ -rf
+    fi
     if [ -d $coor_dir_ ]; then rm $coor_dir_ -rf; fi
     if [ -d $ota_dir_ ]; then rm $ota_dir_ -rf; fi
 
@@ -410,7 +418,6 @@ update_prepare() {
 
     dfu_pkg_="$1"
 
-    firmwares_="$fws_dir_/lumi_fw.tar"
 
     kernel_bin_="$ota_dir_/kernel"
     rootfs_bin_="$ota_dir_/rootfs.sqfs"
