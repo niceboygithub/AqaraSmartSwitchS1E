@@ -24,7 +24,7 @@ SW_VERSION=""
 
 # S1E Home Assistant
 NAME="s1e2ha"
-S1E2HA_URL="https://raw.githubusercontent.com/niceboygithub/AqaraSmartSwitchS1E/master/homeassistant/$NAME.tar.gz"
+S1E2HA_URL="https://raw.githubusercontent.com/oopuuu/AqaraSmartSwitchS1E/master/homeassistant/$NAME.tar.gz"
 
 info() {
     echo "INFO: $@"
